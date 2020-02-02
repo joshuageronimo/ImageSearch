@@ -10,6 +10,8 @@ import UIKit
 
 class GalleryController: UICollectionViewController {
     
+    fileprivate let photoCellReuseIdentifier = "PhotoCell"
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         initialSetup()
@@ -32,7 +34,10 @@ class GalleryController: UICollectionViewController {
     }
     
     fileprivate func registerCollectionViewCells() {
-        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+//        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+ 
+        
+        collectionView.register(UINib(nibName: photoCellReuseIdentifier, bundle: .main), forCellWithReuseIdentifier: photoCellReuseIdentifier)
     }
         
 }
@@ -45,9 +50,10 @@ extension GalleryController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-        cell.backgroundColor = .white
-        return cell
+        if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: photoCellReuseIdentifier, for: indexPath) as? PhotoCell {
+            return cell
+        }
+        return PhotoCell()
     }
 }
 
