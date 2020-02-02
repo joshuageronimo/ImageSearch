@@ -1,6 +1,6 @@
 # ImageSearch
 
-A demo image search app using the NASA Image Search API.
+An image search app demo using the NASA Image Search API.
 https://images.nasa.gov/docs/images.nasa.gov_api_docs.pdf
 
 ## Under the hood
