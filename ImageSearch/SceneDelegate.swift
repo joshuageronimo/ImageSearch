@@ -24,8 +24,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
         let flowLayout = UICollectionViewFlowLayout()
         let rootVC = UINavigationController(rootViewController: GalleryController(collectionViewLayout: flowLayout))
-        let controllerInDev = PhotoDetailController()
-        window?.rootViewController = controllerInDev
+//        let controllerInDev = PhotoDetailController()
+        window?.rootViewController = rootVC
         window?.makeKeyAndVisible()
     }
 
@@ -67,6 +67,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let textAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         navigationBarAppearace.titleTextAttributes = textAttributes
         navigationBarAppearace.largeTitleTextAttributes = textAttributes
+        
+        // nav search bar textfield
+        UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.secondaryColor]
     }
 }
 

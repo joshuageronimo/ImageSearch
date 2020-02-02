@@ -38,6 +38,7 @@ class GalleryController: UICollectionViewController {
         
         /// setup SearchController for the navigation bar
         let searchController = UISearchController(searchResultsController: nil)
+        searchController.searchBar.delegate = self
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
     }
@@ -62,7 +63,8 @@ class GalleryController: UICollectionViewController {
                 print("APIResponse is nil")
                 return
             }
-            if page == 1 {
+            self?.currentPage = page
+            if self?.currentPage == 1 {
                 self?.photos = nil
                 // don't add images without links
                 self?.photos = apiResponse.getAllImages()?.filter({$0.getImageLink() != nil})
@@ -94,7 +96,8 @@ extension GalleryController {
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: photoCellReuseIdentifier, for: indexPath) as? PhotoCell {
             /// load more photos if available
-            if ((photos?.count ?? 0) - 5) == indexPath.item && shouldLoadMoreImages {
+            /// note - start fetching next batch of photos before it gets to the end of the collectionview
+            if ((photos?.count ?? 0) - 10) == indexPath.item && shouldLoadMoreImages {
                 shouldLoadMoreImages = false
                 currentPage += 1
                 fetchPhotos(of: "dog", inPage: currentPage)
@@ -130,6 +133,15 @@ extension GalleryController: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 0
+    }
+}
+
+
+extension GalleryController: UISearchBarDelegate {
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        guard let query = searchBar.text else { return }
+        fetchPhotos(of: query, inPage: 1)
     }
 }
 
