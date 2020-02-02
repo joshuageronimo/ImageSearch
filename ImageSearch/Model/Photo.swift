@@ -8,32 +8,42 @@
 
 import Foundation
 
-struct NASAImageAPI: Decodable {
-    let collection: Collection
+/// model for the api response
+struct APIResponse: Decodable {
+    fileprivate let collection: Collection?
 
-    struct Collection: Decodable {
-        let items: [Photo]
+    fileprivate struct Collection: Decodable {
+        let items: [Photo]?
     }
     
-    func getAllImages() -> [Photo] {
-        return collection.items
+    func getAllImages() -> [Photo]? {
+        return collection?.items
     }
 }
 
+/// model for Photo
 struct Photo: Decodable {
-    let links: [Link]
-    let data: [ImageInfo]
+    fileprivate let links: [Link]?
+    fileprivate let data: [ImageInfo]?
 
 
-    struct Link: Decodable {
-        let link: String
+    fileprivate struct Link: Decodable {
+        let link: String?
     }
     
     struct ImageInfo: Decodable {
-        let title: String
-        let photographer: String
-        let description: String
-        let location: String
+        let title: String?
+        let photographer: String?
+        let description: String?
+        let location: String?
+    }
+    
+    func getImageLink() -> String? {
+        return links?.first?.link
+    }
+    
+    func getImageInfo() -> ImageInfo? {
+        return data?.first
     }
 }
 

@@ -10,6 +10,7 @@ import UIKit
 
 class GalleryController: UICollectionViewController {
     
+    fileprivate var photos: [Photo]?
     fileprivate let photoCellReuseIdentifier = "PhotoCell"
     
     override func viewDidLoad() {
@@ -20,7 +21,11 @@ class GalleryController: UICollectionViewController {
     fileprivate func initialSetup() {
         setupNavigationBar()
         registerCollectionViewCells()
+        // travel photos by default
+        fetchPhotos(of: "travel", inPage: 1)
     }
+    
+    // MARK: USER INTERFACE
     
     fileprivate func setupNavigationBar() {
         /// setup navigation bar settings/param
@@ -34,10 +39,28 @@ class GalleryController: UICollectionViewController {
     }
     
     fileprivate func registerCollectionViewCells() {
-//        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
- 
-        
         collectionView.register(UINib(nibName: photoCellReuseIdentifier, bundle: .main), forCellWithReuseIdentifier: photoCellReuseIdentifier)
+    }
+    
+    // MARK: NETWORK
+    
+    fileprivate func fetchPhotos(of photoQuery: String, inPage page: Int) {
+        let param: [String: String] = ["q": photoQuery,
+                                    "page": "\(page)"]
+        NetworkService.shared.fetchData(apiEndPoint: "/search", parameters: param) { [weak self] (apiResponse: APIResponse?, error: Error?)  in
+            if let error = error {
+                print("Failed to fetch photos: \(error)")
+                return
+            }
+            
+            guard let apiResponse = apiResponse else {
+                print("APIResponse is nil")
+                return
+            }
+            if page == 1 { self?.photos = nil }
+            self?.photos = apiResponse.getAllImages()
+            self?.collectionView.reloadData()
+        }
     }
         
 }
@@ -46,7 +69,7 @@ class GalleryController: UICollectionViewController {
 extension GalleryController {
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 5
+        return self.photos?.count ?? 0
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
