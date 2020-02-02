@@ -30,7 +30,7 @@ class GalleryController: UICollectionViewController {
     fileprivate func setupNavigationBar() {
         /// setup navigation bar settings/param
         title = "Image Search"
-        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.prefersLargeTitles = false
         
         /// setup SearchController for the navigation bar
         let searchController = UISearchController(searchResultsController: nil)
@@ -59,7 +59,9 @@ class GalleryController: UICollectionViewController {
             }
             if page == 1 { self?.photos = nil }
             self?.photos = apiResponse.getAllImages()
-            self?.collectionView.reloadData()
+            DispatchQueue.main.async {
+                self?.collectionView.reloadData()
+            }
         }
     }
         
@@ -74,7 +76,10 @@ extension GalleryController {
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: photoCellReuseIdentifier, for: indexPath) as? PhotoCell {
-            return cell
+            if let photo = photos?[indexPath.item] {
+                cell.setCellInfo(photo: photo)
+                return cell
+            }
         }
         return PhotoCell()
     }
@@ -95,6 +100,8 @@ extension GalleryController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 0
     }
+    
+
 }
 
 

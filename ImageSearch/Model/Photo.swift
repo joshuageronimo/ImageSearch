@@ -28,7 +28,7 @@ struct Photo: Decodable {
 
 
     fileprivate struct Link: Decodable {
-        let link: String?
+        let href: String?
     }
     
     struct ImageInfo: Decodable {
@@ -39,7 +39,7 @@ struct Photo: Decodable {
     }
     
     func getImageLink() -> String? {
-        return links?.first?.link
+        return links?.first?.href
     }
     
     func getImageInfo() -> ImageInfo? {

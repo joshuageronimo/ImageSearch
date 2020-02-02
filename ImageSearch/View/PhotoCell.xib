@@ -16,7 +16,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="228" height="209"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default-gallery-image" translatesAutoresizingMaskIntoConstraints="NO" id="rAA-bm-ctg">
+                    <imageView autoresizesSubviews="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default-gallery-image" translatesAutoresizingMaskIntoConstraints="NO" id="rAA-bm-ctg" customClass="CustomImageView" customModule="ImageSearch" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="228" height="209"/>
                     </imageView>
                     <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="ycd-OT-QOC">

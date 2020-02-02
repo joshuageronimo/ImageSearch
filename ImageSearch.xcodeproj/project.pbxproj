@@ -17,6 +17,7 @@
 		7644794523E662150020F99E /* PhotoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7644794323E662150020F99E /* PhotoCell.xib */; };
 		7644794723E667B90020F99E /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7644794623E667B90020F99E /* Photo.swift */; };
 		7644794A23E66D400020F99E /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7644794923E66D400020F99E /* NetworkService.swift */; };
+		7644794C23E672CE0020F99E /* CustomImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7644794B23E672CE0020F99E /* CustomImageView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		7644794323E662150020F99E /* PhotoCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhotoCell.xib; sourceTree = "<group>"; };
 		7644794623E667B90020F99E /* Photo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Photo.swift; sourceTree = "<group>"; };
 		7644794923E66D400020F99E /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
+		7644794B23E672CE0020F99E /* CustomImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomImageView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +91,7 @@
 		7644793F23E661830020F99E /* View */ = {
 			isa = PBXGroup;
 			children = (
+				7644794B23E672CE0020F99E /* CustomImageView.swift */,
 				7644794223E662150020F99E /* PhotoCell.swift */,
 				7644794323E662150020F99E /* PhotoCell.xib */,
 			);
@@ -186,6 +189,7 @@
 				7644794423E662150020F99E /* PhotoCell.swift in Sources */,
 				7644792F23E651110020F99E /* GalleryController.swift in Sources */,
 				7644792B23E651110020F99E /* AppDelegate.swift in Sources */,
+				7644794C23E672CE0020F99E /* CustomImageView.swift in Sources */,
 				7644792D23E651110020F99E /* SceneDelegate.swift in Sources */,
 				7644794A23E66D400020F99E /* NetworkService.swift in Sources */,
 				7644794723E667B90020F99E /* Photo.swift in Sources */,
