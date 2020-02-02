@@ -38,6 +38,27 @@ extension UIImageView {
     }
 }
 
+extension UIButton {
+    
+    convenience init(text: String, textColor: UIColor, textSize: CGFloat, backgroundColor: UIColor? = nil, borderColor: UIColor? = nil, cornerRadius: CGFloat = 25) {
+        self.init(type: .system)
+        self.setTitle(text, for: .normal)
+        self.setTitleColor(textColor, for: .normal)
+        self.titleLabel?.font = UIFont.systemFont(ofSize: textSize, weight: .medium)
+        if let color = backgroundColor {
+           self.backgroundColor = color
+        }
+        
+        if let color = borderColor {
+            self.layer.borderWidth = 1
+            self.layer.borderColor = color.cgColor
+        }
+        if borderColor != nil || backgroundColor != nil {
+            self.layer.cornerRadius = cornerRadius
+        }
+    }
+}
+
 extension UIStackView {
     convenience init(space: CGFloat = 0, distribution: UIStackView.Distribution, alignment: UIStackView.Alignment, axis: NSLayoutConstraint.Axis = .vertical) {
         self.init()

@@ -10,11 +10,32 @@ import UIKit
 
 class GalleryController: UICollectionViewController {
     
+    
+    fileprivate let errorMessageLabel = UILabel(text: "Oops... Something went wrong\nPlease check your internet connection",
+                                           textColor: .white,
+                                           fontSize: 25,
+                                           fontWeight: .semibold,
+                                           dynamicSize: true,
+                                           numberOfLines: 3,
+                                           textAlignment: .center)
+    fileprivate let refreshButton: UIButton = {
+        let button = UIButton(text: "Refresh",
+                              textColor: .secondaryColor,
+                              textSize: 14,
+                              borderColor: .secondaryColor,
+                              cornerRadius: 20)
+        button.addTarget(self, action: #selector(handleRefreshButton(sender:)), for: .touchUpInside)
+        return button
+    }()
+    
     fileprivate let photoCellReuseIdentifier = "PhotoCell"
     fileprivate var photos: [Photo]?
     fileprivate var shouldLoadMoreImages = false
     fileprivate var numberOfPhotosBeenLoaded = 0 // keep track of number of photos loaded
     fileprivate var currentPage = 1 // keep track of page for pagination
+    fileprivate var currentPhotoQuery = "travel" // keep track of current photo query
+    
+    // MARK: Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,7 +47,7 @@ class GalleryController: UICollectionViewController {
         setupNavigationBar()
         registerCollectionViewCells()
         // travel photos by default
-        fetchPhotos(of: "dog", inPage: 1)
+        fetchPhotos(of: currentPhotoQuery, inPage: 1)
     }
     
     // MARK: USER INTERFACE
@@ -47,15 +68,43 @@ class GalleryController: UICollectionViewController {
         collectionView.register(UINib(nibName: photoCellReuseIdentifier, bundle: .main), forCellWithReuseIdentifier: photoCellReuseIdentifier)
     }
     
+    func showErrorMessage(_ showErrorMessage: Bool = true) {
+        if showErrorMessage {
+            view.addSubview(errorMessageLabel)
+            view.addSubview(refreshButton)
+            errorMessageLabel.anchor(width: view.frame.width * 0.8, height: 0)
+            errorMessageLabel.anchor(centerX: view.centerXAnchor, centerY: view.centerYAnchor)
+            
+            refreshButton.topAnchor.constraint(equalTo: errorMessageLabel.bottomAnchor, constant: 20).isActive = true
+            refreshButton.anchor(width: 150, height: 40)
+            refreshButton.anchor(centerX: view.centerXAnchor, centerY: nil)
+        } else {
+            errorMessageLabel.removeFromSuperview()
+            refreshButton.removeFromSuperview()
+        }
+    }
+    
+    // MARK: ACTIONS
+    
+    @objc func handleRefreshButton(sender: UIButton) {
+        print("Refresh Button Tapped")
+        showErrorMessage(false)
+        fetchPhotos(of: currentPhotoQuery, inPage: 1)
+    }
+    
     // MARK: NETWORK
     
     fileprivate func fetchPhotos(of photoQuery: String, inPage page: Int) {
+        currentPhotoQuery = photoQuery
         let param: [String: String] = ["q": photoQuery,
                                     "page": "\(page)"]
         print("Start Fetching Photos")
         NetworkService.shared.fetchData(apiEndPoint: "/search", parameters: param) { [weak self] (apiResponse: APIResponse?, error: Error?)  in
             if let error = error {
                 print("Failed to fetch photos: \(error)")
+                DispatchQueue.main.async {
+                    self?.showErrorMessage()
+                }
                 return
             }
             
@@ -79,6 +128,7 @@ class GalleryController: UICollectionViewController {
                 self?.shouldLoadMoreImages = true
             }
             DispatchQueue.main.async {
+                print("Reload CollectionView")
                 self?.collectionView.reloadData()
             }
         }
@@ -100,7 +150,7 @@ extension GalleryController {
             if ((photos?.count ?? 0) - 10) == indexPath.item && shouldLoadMoreImages {
                 shouldLoadMoreImages = false
                 currentPage += 1
-                fetchPhotos(of: "dog", inPage: currentPage)
+                fetchPhotos(of: currentPhotoQuery, inPage: currentPage)
             }
             
             /// set cell
@@ -136,12 +186,22 @@ extension GalleryController: UICollectionViewDelegateFlowLayout {
     }
 }
 
+// MARK: UISearchBar Delegate Functions
 
 extension GalleryController: UISearchBarDelegate {
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        guard let query = searchBar.text else { return }
-        fetchPhotos(of: query, inPage: 1)
+        print("Search Query: \(String(describing: searchBar.text))")
+        guard let query = searchBar.text else {
+            print("Nothing to query")
+            return
+        }
+        
+        // only fetch API for a different query and not empty
+        if query != currentPhotoQuery && query.trimmingCharacters(in: .whitespacesAndNewlines) != "" {
+            fetchPhotos(of: query, inPage: 1)
+        }
+        
     }
 }
 

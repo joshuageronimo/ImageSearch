@@ -39,7 +39,10 @@ class NetworkService: NSObject {
                 completion(nil, error)
             }
 
-            guard let data = data else { return }
+            guard let data = data else {
+                completion(nil, error)
+                return
+            }
             // Decode JSON and parse it nicely into one of the model objects
             do {
                 // NOTE:  uncomment code for debugging
