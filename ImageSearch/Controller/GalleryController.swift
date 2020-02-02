@@ -12,6 +12,9 @@ class GalleryController: UICollectionViewController {
     
     fileprivate var photos: [Photo]?
     fileprivate let photoCellReuseIdentifier = "PhotoCell"
+    fileprivate var numberOfPhotosBeenLoaded = 0
+    fileprivate var shouldLoadMoreImages = false
+    fileprivate var currentPage = 1 // keep track of page for pagination
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,7 +33,7 @@ class GalleryController: UICollectionViewController {
     fileprivate func setupNavigationBar() {
         /// setup navigation bar settings/param
         title = "Image Search"
-        navigationController?.navigationBar.prefersLargeTitles = false
+        navigationController?.navigationBar.prefersLargeTitles = true
         
         /// setup SearchController for the navigation bar
         let searchController = UISearchController(searchResultsController: nil)
@@ -57,8 +60,20 @@ class GalleryController: UICollectionViewController {
                 print("APIResponse is nil")
                 return
             }
-            if page == 1 { self?.photos = nil }
-            self?.photos = apiResponse.getAllImages()
+            if page == 1 {
+                self?.photos = nil
+                // don't add images without links
+                self?.photos = apiResponse.getAllImages()?.filter({$0.getImageLink() != nil})
+            } else {
+                if let newSetOfPhotos = apiResponse.getAllImages()?.filter({$0.getImageLink() != nil}) {
+                    self?.photos?.append(contentsOf: newSetOfPhotos)
+                }
+            }
+            self?.numberOfPhotosBeenLoaded += apiResponse.getAllImages()?.count ?? 0
+            
+            if self?.numberOfPhotosBeenLoaded ?? 0 < apiResponse.getNumberOfResults() {
+                self?.shouldLoadMoreImages = true
+            }
             DispatchQueue.main.async {
                 self?.collectionView.reloadData()
             }
@@ -76,6 +91,11 @@ extension GalleryController {
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: photoCellReuseIdentifier, for: indexPath) as? PhotoCell {
+            if ((photos?.count ?? 0) - 5) == indexPath.item && shouldLoadMoreImages {
+                shouldLoadMoreImages = false
+                currentPage += 1
+                fetchPhotos(of: "travel", inPage: currentPage)
+            }
             if let photo = photos?[indexPath.item] {
                 cell.setCellInfo(photo: photo)
                 return cell

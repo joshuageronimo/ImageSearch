@@ -64,7 +64,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         navigationBarAppearace.isTranslucent = false
     
         // Set Nav title font
-        navigationBarAppearace.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        let textAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        navigationBarAppearace.titleTextAttributes = textAttributes
+        navigationBarAppearace.largeTitleTextAttributes = textAttributes
     }
 }
 

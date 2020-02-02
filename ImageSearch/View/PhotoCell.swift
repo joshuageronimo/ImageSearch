@@ -22,14 +22,16 @@ class PhotoCell: UICollectionViewCell {
     func setCellInfo(photo: Photo) {
         loadingIndicator.startAnimating()
         if let photoLink = photo.getImageLink() {
-            self.photo.loadImageUsingUrlString(urlString: photoLink) { [unowned self] (status: PhotoLoadingStatus) in
+            self.photo.loadImageUsingUrlString(urlString: photoLink) { [weak self] (status: PhotoLoadingStatus) in
                 switch status {
                 case .success:
-                    self.loadingIndicator.stopAnimating()
+                    self?.loadingIndicator.stopAnimating()
                 case .failed:
-                    self.loadingIndicator.stopAnimating()
+                    self?.loadingIndicator.stopAnimating()
                 }
             }
+        } else {
+            loadingIndicator.stopAnimating()
         }
     }
 

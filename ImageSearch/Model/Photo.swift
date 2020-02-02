@@ -13,12 +13,23 @@ struct APIResponse: Decodable {
     fileprivate let collection: Collection?
 
     fileprivate struct Collection: Decodable {
-        let items: [Photo]?
+        fileprivate let items: [Photo]?
+        fileprivate let metadata: MetaData?
+        
+        fileprivate struct MetaData: Decodable {
+            fileprivate let total_hits: Int?
+        }
     }
     
     func getAllImages() -> [Photo]? {
         return collection?.items
     }
+    
+    func getNumberOfResults() -> Int {
+        return collection?.metadata?.total_hits ?? 0
+    }
+    
+    
 }
 
 /// model for Photo
