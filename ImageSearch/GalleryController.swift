@@ -8,13 +8,65 @@
 
 import UIKit
 
-class GalleryController: UIViewController {
-
+class GalleryController: UICollectionViewController {
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        initialSetup()
+    }
+    
+    fileprivate func initialSetup() {
+        setupNavigationBar()
+        registerCollectionViewCells()
+    }
+    
+    fileprivate func setupNavigationBar() {
+        /// setup navigation bar settings/param
+        title = "Image Search"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        
+        /// setup SearchController for the navigation bar
+        let searchController = UISearchController(searchResultsController: nil)
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
+    }
+    
+    fileprivate func registerCollectionViewCells() {
+        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+    }
+        
+}
+
+// MARK: CollectionView Delegate / Datasource
+extension GalleryController {
+    
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 5
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+        cell.backgroundColor = .white
+        return cell
+    }
+}
+
+extension GalleryController: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let screenWidth = self.view.frame.width
+        let cellSize = screenWidth / 2
+        return CGSize(width: cellSize, height: cellSize)
     }
 
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
+    }
 
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
+    }
 }
+
+
 
