@@ -8,6 +8,7 @@ https://images.nasa.gov/docs/images.nasa.gov_api_docs.pdf
 - The app has an MVC architecture 
 - UI is done mostly programmatically 
 - URLSession for networking
+- Utilizing Decodable protocol to parse data easily
 
 
 ## ScreenShots
