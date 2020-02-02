@@ -24,8 +24,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
         let flowLayout = UICollectionViewFlowLayout()
         let rootVC = UINavigationController(rootViewController: GalleryController(collectionViewLayout: flowLayout))
-//        let controllerInDev = UINavigationController(rootViewController: SettingsViewController())
-        window?.rootViewController = rootVC
+        let controllerInDev = PhotoDetailController()
+        window?.rootViewController = controllerInDev
         window?.makeKeyAndVisible()
     }
 
@@ -60,7 +60,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func setupNavigationBar() {
         // Set Bar Color
         let navigationBarAppearace = UINavigationBar.appearance()
-        navigationBarAppearace.barTintColor = .backgroundColor
+        navigationBarAppearace.barTintColor = .mainColor
         navigationBarAppearace.isTranslucent = false
     
         // Set Nav title font

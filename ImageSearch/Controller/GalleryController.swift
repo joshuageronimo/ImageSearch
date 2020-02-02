@@ -10,10 +10,10 @@ import UIKit
 
 class GalleryController: UICollectionViewController {
     
-    fileprivate var photos: [Photo]?
     fileprivate let photoCellReuseIdentifier = "PhotoCell"
-    fileprivate var numberOfPhotosBeenLoaded = 0
+    fileprivate var photos: [Photo]?
     fileprivate var shouldLoadMoreImages = false
+    fileprivate var numberOfPhotosBeenLoaded = 0 // keep track of number of photos loaded
     fileprivate var currentPage = 1 // keep track of page for pagination
     
     override func viewDidLoad() {
@@ -22,6 +22,7 @@ class GalleryController: UICollectionViewController {
     }
     
     fileprivate func initialSetup() {
+        view.backgroundColor = .mainColor
         setupNavigationBar()
         registerCollectionViewCells()
         // travel photos by default
@@ -106,6 +107,12 @@ extension GalleryController {
             }
         }
         return PhotoCell()
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let detailVC = PhotoDetailController()
+        detailVC.photo = photos?[indexPath.item]
+        present(PhotoDetailController(), animated: true)
     }
 }
 

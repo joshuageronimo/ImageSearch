@@ -37,3 +37,13 @@ extension UIImageView {
         self.contentMode = .scaleAspectFit
     }
 }
+
+extension UIStackView {
+    convenience init(space: CGFloat = 0, distribution: UIStackView.Distribution, alignment: UIStackView.Alignment, axis: NSLayoutConstraint.Axis = .vertical) {
+        self.init()
+        self.spacing = space
+        self.distribution = distribution
+        self.alignment = alignment
+        self.axis = axis
+    }
+}
