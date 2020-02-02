@@ -25,7 +25,7 @@ class GalleryController: UICollectionViewController {
         setupNavigationBar()
         registerCollectionViewCells()
         // travel photos by default
-        fetchPhotos(of: "travel", inPage: 1)
+        fetchPhotos(of: "dog", inPage: 1)
     }
     
     // MARK: USER INTERFACE
@@ -50,6 +50,7 @@ class GalleryController: UICollectionViewController {
     fileprivate func fetchPhotos(of photoQuery: String, inPage page: Int) {
         let param: [String: String] = ["q": photoQuery,
                                     "page": "\(page)"]
+        print("Start Fetching Photos")
         NetworkService.shared.fetchData(apiEndPoint: "/search", parameters: param) { [weak self] (apiResponse: APIResponse?, error: Error?)  in
             if let error = error {
                 print("Failed to fetch photos: \(error)")
@@ -91,11 +92,14 @@ extension GalleryController {
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: photoCellReuseIdentifier, for: indexPath) as? PhotoCell {
+            /// load more photos if available
             if ((photos?.count ?? 0) - 5) == indexPath.item && shouldLoadMoreImages {
                 shouldLoadMoreImages = false
                 currentPage += 1
-                fetchPhotos(of: "travel", inPage: currentPage)
+                fetchPhotos(of: "dog", inPage: currentPage)
             }
+            
+            /// set cell
             if let photo = photos?[indexPath.item] {
                 cell.setCellInfo(photo: photo)
                 return cell
@@ -120,8 +124,6 @@ extension GalleryController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 0
     }
-    
-
 }
 
 

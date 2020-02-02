@@ -18,6 +18,10 @@
 		7644794723E667B90020F99E /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7644794623E667B90020F99E /* Photo.swift */; };
 		7644794A23E66D400020F99E /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7644794923E66D400020F99E /* NetworkService.swift */; };
 		7644794C23E672CE0020F99E /* CustomImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7644794B23E672CE0020F99E /* CustomImageView.swift */; };
+		7644794E23E7221E0020F99E /* PhotoDetailController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7644794D23E7221E0020F99E /* PhotoDetailController.swift */; };
+		7644795023E7229C0020F99E /* UIView+Anchor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7644794F23E7229C0020F99E /* UIView+Anchor.swift */; };
+		7644795223E722EA0020F99E /* UIColor+Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7644795123E722EA0020F99E /* UIColor+Theme.swift */; };
+		7644795423E723900020F99E /* UIObject+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7644795323E723900020F99E /* UIObject+Convenience.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +38,10 @@
 		7644794623E667B90020F99E /* Photo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Photo.swift; sourceTree = "<group>"; };
 		7644794923E66D400020F99E /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		7644794B23E672CE0020F99E /* CustomImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomImageView.swift; sourceTree = "<group>"; };
+		7644794D23E7221E0020F99E /* PhotoDetailController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailController.swift; sourceTree = "<group>"; };
+		7644794F23E7229C0020F99E /* UIView+Anchor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Anchor.swift"; sourceTree = "<group>"; };
+		7644795123E722EA0020F99E /* UIColor+Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Theme.swift"; sourceTree = "<group>"; };
+		7644795323E723900020F99E /* UIObject+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIObject+Convenience.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +92,7 @@
 			isa = PBXGroup;
 			children = (
 				7644792E23E651110020F99E /* GalleryController.swift */,
+				7644794D23E7221E0020F99E /* PhotoDetailController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -109,9 +118,20 @@
 		7644794823E66D2B0020F99E /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				7644795523E724340020F99E /* Extensions */,
 				7644794923E66D400020F99E /* NetworkService.swift */,
 			);
 			path = Utilities;
+			sourceTree = "<group>";
+		};
+		7644795523E724340020F99E /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				7644794F23E7229C0020F99E /* UIView+Anchor.swift */,
+				7644795123E722EA0020F99E /* UIColor+Theme.swift */,
+				7644795323E723900020F99E /* UIObject+Convenience.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -187,12 +207,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				7644794423E662150020F99E /* PhotoCell.swift in Sources */,
+				7644795423E723900020F99E /* UIObject+Convenience.swift in Sources */,
 				7644792F23E651110020F99E /* GalleryController.swift in Sources */,
 				7644792B23E651110020F99E /* AppDelegate.swift in Sources */,
 				7644794C23E672CE0020F99E /* CustomImageView.swift in Sources */,
 				7644792D23E651110020F99E /* SceneDelegate.swift in Sources */,
+				7644795223E722EA0020F99E /* UIColor+Theme.swift in Sources */,
 				7644794A23E66D400020F99E /* NetworkService.swift in Sources */,
 				7644794723E667B90020F99E /* Photo.swift in Sources */,
+				7644794E23E7221E0020F99E /* PhotoDetailController.swift in Sources */,
+				7644795023E7229C0020F99E /* UIView+Anchor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

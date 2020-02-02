@@ -60,7 +60,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func setupNavigationBar() {
         // Set Bar Color
         let navigationBarAppearace = UINavigationBar.appearance()
-        navigationBarAppearace.barTintColor = .black
+        navigationBarAppearace.barTintColor = .backgroundColor
         navigationBarAppearace.isTranslucent = false
     
         // Set Nav title font
