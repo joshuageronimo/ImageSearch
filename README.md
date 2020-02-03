@@ -3,12 +3,17 @@
 An image search app demo using the NASA Image Search API.
 https://images.nasa.gov/docs/images.nasa.gov_api_docs.pdf
 
+## Features
+- user can search any photo using the UISearchBar
+- user can see a detailview of the photo containing information about the image
+
 ## Under the hood
 - Swift 5
 - The app has an MVC architecture 
 - UI is done mostly programmatically 
 - URLSession for networking
 - Utilizing Decodable protocol to parse data easily
+- image caching
 
 
 ## ScreenShots
