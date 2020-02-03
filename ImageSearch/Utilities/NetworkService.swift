@@ -58,7 +58,7 @@ class NetworkService: NSObject {
                     completion(object, nil)
                 }
             } catch let jsonError {
-                print("Failed to serialize json: \(jsonError)")
+                print("JSONDecoder failed: \(jsonError)")
                 completion(nil, jsonError)
             }
         }.resume() // call the server!

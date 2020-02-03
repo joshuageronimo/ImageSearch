@@ -10,6 +10,7 @@ import UIKit
 
 class GalleryController: UICollectionViewController {
     
+    let searchController = UISearchController(searchResultsController: nil)
     
     fileprivate let errorMessageLabel = UILabel(text: "Oops... Something went wrong\nPlease check your internet connection",
                                            textColor: .white,
@@ -28,12 +29,20 @@ class GalleryController: UICollectionViewController {
         return button
     }()
     
+    fileprivate let refreshControl = UIRefreshControl()
+    
     fileprivate let photoCellReuseIdentifier = "PhotoCell"
     fileprivate var photos: [Photo]?
     fileprivate var shouldLoadMoreImages = false
     fileprivate var numberOfPhotosBeenLoaded = 0 // keep track of number of photos loaded
     fileprivate var currentPage = 1 // keep track of page for pagination
-    fileprivate var currentPhotoQuery = "travel" // keep track of current photo query
+    fileprivate var currentPhotoQuery = "new york" // keep track of current photo query
+    
+    /// different types of error message type when collectionview is empty
+    enum EmptyCollectionViewMessageType {
+        case apiResponseError
+        case noSearchResult
+    }
     
     // MARK: Life Cycle
     
@@ -46,6 +55,8 @@ class GalleryController: UICollectionViewController {
         view.backgroundColor = .mainColor
         setupNavigationBar()
         registerCollectionViewCells()
+        refreshControl.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
+//        collectionView.refreshControl = refreshControl
         // travel photos by default
         fetchPhotos(of: currentPhotoQuery, inPage: 1)
     }
@@ -58,7 +69,6 @@ class GalleryController: UICollectionViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         
         /// setup SearchController for the navigation bar
-        let searchController = UISearchController(searchResultsController: nil)
         searchController.searchBar.delegate = self
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
@@ -68,13 +78,20 @@ class GalleryController: UICollectionViewController {
         collectionView.register(UINib(nibName: photoCellReuseIdentifier, bundle: .main), forCellWithReuseIdentifier: photoCellReuseIdentifier)
     }
     
-    func showErrorMessage(_ showErrorMessage: Bool = true) {
+    func showEmptyCollectionViewMessage(_ showErrorMessage: Bool = true, messageType: EmptyCollectionViewMessageType) {
+        
+        switch messageType {
+        case .apiResponseError:
+            errorMessageLabel.text = "Oops... Something went wrong\nPlease check your internet connection"
+        case .noSearchResult:
+            errorMessageLabel.text = "No results for: \(currentPhotoQuery)"
+        }
+        
         if showErrorMessage {
             view.addSubview(errorMessageLabel)
             view.addSubview(refreshButton)
             errorMessageLabel.anchor(width: view.frame.width * 0.8, height: 0)
             errorMessageLabel.anchor(centerX: view.centerXAnchor, centerY: view.centerYAnchor)
-            
             refreshButton.topAnchor.constraint(equalTo: errorMessageLabel.bottomAnchor, constant: 20).isActive = true
             refreshButton.anchor(width: 150, height: 40)
             refreshButton.anchor(centerX: view.centerXAnchor, centerY: nil)
@@ -86,10 +103,15 @@ class GalleryController: UICollectionViewController {
     
     // MARK: ACTIONS
     
-    @objc func handleRefreshButton(sender: UIButton) {
-        print("Refresh Button Tapped")
-        showErrorMessage(false)
+    @objc func handleRefresh() {
+        print("Refreshing")
         fetchPhotos(of: currentPhotoQuery, inPage: 1)
+    }
+    
+    @objc func handleRefreshButton(sender: UIButton) {
+        showEmptyCollectionViewMessage(false, messageType: .apiResponseError)
+        handleRefresh()
+        
     }
     
     // MARK: NETWORK
@@ -103,13 +125,14 @@ class GalleryController: UICollectionViewController {
             if let error = error {
                 print("Failed to fetch photos: \(error)")
                 DispatchQueue.main.async {
-                    self?.showErrorMessage()
+                    self?.showEmptyCollectionViewMessage(messageType: .apiResponseError)
                 }
                 return
             }
             
             guard let apiResponse = apiResponse else {
                 print("APIResponse is nil")
+                self?.showEmptyCollectionViewMessage(messageType: .noSearchResult)
                 return
             }
             self?.currentPage = page
@@ -117,6 +140,12 @@ class GalleryController: UICollectionViewController {
                 self?.photos = nil
                 // don't add images without links
                 self?.photos = apiResponse.getAllImages()?.filter({$0.getImageLink() != nil})
+                
+                if self?.photos == nil || self?.photos?.count == 0 {
+                    self?.showEmptyCollectionViewMessage(messageType: .noSearchResult)
+                } else {
+                    self?.showEmptyCollectionViewMessage(false, messageType: .noSearchResult)
+                }
             } else {
                 if let newSetOfPhotos = apiResponse.getAllImages()?.filter({$0.getImageLink() != nil}) {
                     self?.photos?.append(contentsOf: newSetOfPhotos)
@@ -165,7 +194,7 @@ extension GalleryController {
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let detailVC = PhotoDetailController()
         detailVC.photo = photos?[indexPath.item]
-        present(PhotoDetailController(), animated: true)
+        present(detailVC, animated: true)
     }
 }
 
@@ -192,16 +221,16 @@ extension GalleryController: UISearchBarDelegate {
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         print("Search Query: \(String(describing: searchBar.text))")
-        guard let query = searchBar.text else {
+        guard let query = searchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines) else {
             print("Nothing to query")
             return
         }
         
         // only fetch API for a different query and not empty
-        if query != currentPhotoQuery && query.trimmingCharacters(in: .whitespacesAndNewlines) != "" {
+        if query != currentPhotoQuery && query != "" {
             fetchPhotos(of: query, inPage: 1)
         }
-        
+        searchController.isActive = false
     }
 }
 

@@ -12,7 +12,7 @@ class PhotoDetailController: UIViewController {
     
     // MARK: UIOBJECTS
     let photoThumbnailImageView = CustomImageView(image: UIImage(named: "default-gallery-image")!,
-                                     contentMode: .scaleAspectFill)
+                                                  contentMode: .scaleAspectFill)
     
     let photoTitleLabel = UILabel(text: "Title",
                                   textColor: .secondaryColor,
@@ -37,7 +37,7 @@ class PhotoDetailController: UIViewController {
     let photoLocationLabel: UILabel = {
         let label = UILabel(text: "",
                             textColor: .secondaryColor,
-                            fontSize: 15,
+                            fontSize: 14,
                             fontWeight: .thin,
                             dynamicSize: true,
                             numberOfLines: 0,
@@ -51,10 +51,10 @@ class PhotoDetailController: UIViewController {
     let photoPhotographerLabel: UILabel = {
         let label = UILabel(text: "",
                             textColor: .secondaryColor,
-                            fontSize: 15,
+                            fontSize: 16,
                             fontWeight: .thin,
                             dynamicSize: true,
-                            numberOfLines: 0,
+                            numberOfLines: 10,
                             textAlignment: .center)
         let attributedText = NSMutableAttributedString(string: "by", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15, weight: .medium)])
         attributedText.append(NSAttributedString(string: " Photographer", attributes: [:]))
@@ -89,9 +89,19 @@ class PhotoDetailController: UIViewController {
                 }
                 
                 if let location = imageInfo.location {
-                    photoLocationLabel.text = location
+                    let attributedText = NSMutableAttributedString(string: "taken in", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15, weight: .medium)])
+                    attributedText.append(NSAttributedString(string: " \(location)", attributes: [:]))
+                    photoLocationLabel.attributedText = attributedText
                 } else {
                     photoLocationLabel.isHidden = true
+                }
+                
+                if let photographer = imageInfo.photographer {
+                    let attributedText = NSMutableAttributedString(string: "by", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15, weight: .medium)])
+                    attributedText.append(NSAttributedString(string: " \(photographer)", attributes: [:]))
+                    photoPhotographerLabel.attributedText = attributedText
+                } else {
+                    photoPhotographerLabel.text = "Unknown photographer"
                 }
             }
         }
@@ -126,7 +136,7 @@ class PhotoDetailController: UIViewController {
                              width: 0,
                              height: 0)
         
-        photoThumbnailImageView.anchor(width: screenWidth * 0.65, height: screenWidth * 0.65)
+        photoThumbnailImageView.anchor(width: screenWidth * 0.60, height: screenWidth * 0.60)
         border1.anchor(width: screenWidth * 0.8, height: 2)
         border2.anchor(width: screenWidth * 0.8, height: 2)
         
