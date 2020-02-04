@@ -18,6 +18,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let _ = (scene as? UIWindowScene) else { return }
+        
+        guard let windowScene = (scene as? UIWindowScene) else { return }
+        setupNavigationBar()
+        window = UIWindow(windowScene: windowScene)
+        let flowLayout = UICollectionViewFlowLayout()
+        let rootVC = UINavigationController(rootViewController: GalleryController(collectionViewLayout: flowLayout))
+//        let controllerInDev = PhotoDetailController()
+        window?.rootViewController = rootVC
+        window?.makeKeyAndVisible()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -47,7 +56,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
     }
-
-
+    
+    func setupNavigationBar() {
+        // Set Bar Color
+        let navigationBarAppearace = UINavigationBar.appearance()
+        navigationBarAppearace.barTintColor = .mainColor
+        navigationBarAppearace.isTranslucent = false
+    
+        // Set Nav title font
+        let textAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        navigationBarAppearace.titleTextAttributes = textAttributes
+        navigationBarAppearace.largeTitleTextAttributes = textAttributes
+        
+        // nav search bar textfield
+        UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.secondaryColor]
+    }
 }
 
