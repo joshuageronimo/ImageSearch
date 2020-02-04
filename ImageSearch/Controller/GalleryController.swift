@@ -19,6 +19,7 @@ class GalleryController: UICollectionViewController {
                                            dynamicSize: true,
                                            numberOfLines: 3,
                                            textAlignment: .center)
+    
     fileprivate let refreshButton: UIButton = {
         let button = UIButton(text: "Refresh",
                               textColor: .secondaryColor,
@@ -36,11 +37,12 @@ class GalleryController: UICollectionViewController {
     }()
     
     fileprivate let photoCellReuseIdentifier = "PhotoCell"
-    fileprivate var photos: [Photo]?
+    fileprivate let loadingFooterReuseIdentifier = "LoadingFooterView"
+    fileprivate var photos: [Photo] = []
     fileprivate var shouldLoadMoreImages = false
     fileprivate var numberOfPhotosBeenLoaded = 0 // keep track of number of photos loaded
     fileprivate var currentPage = 1 // keep track of page for pagination
-    fileprivate var currentPhotoQuery = "new york" // keep track of current photo query
+    fileprivate var currentPhotoQuery = "happy" // keep track of current photo query
     
     /// different types of error message type when collectionview is empty
     enum EmptyCollectionViewMessageType {
@@ -77,13 +79,13 @@ class GalleryController: UICollectionViewController {
     }
     
     fileprivate func registerCollectionViewCells() {
+        // collectionview cell
         collectionView.register(UINib(nibName: photoCellReuseIdentifier, bundle: .main), forCellWithReuseIdentifier: photoCellReuseIdentifier)
-        
-        collectionView.register(UINib(nibName: "LoadingFooterView", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "LoadingFooterView")
+        // collectionview footer
+        collectionView.register(UINib(nibName: loadingFooterReuseIdentifier, bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: loadingFooterReuseIdentifier)
     }
     
     func showEmptyCollectionViewMessage(_ showErrorMessage: Bool = true, messageType: EmptyCollectionViewMessageType) {
-        
         switch messageType {
         case .apiResponseError:
             errorMessageLabel.text = "Oops... Something went wrong\nPlease check your internet connection"
@@ -105,9 +107,10 @@ class GalleryController: UICollectionViewController {
         }
     }
     
+    // shows/remove a large white loading indicator in the middle of screen
     fileprivate func showLoadingIndicator(_ show: Bool = true) {
         if show {
-            photos = nil
+            photos.removeAll()
             collectionView.reloadData()
             view.addSubview(loadingIndicator)
             loadingIndicator.anchor(centerX: view.centerXAnchor,
@@ -121,15 +124,10 @@ class GalleryController: UICollectionViewController {
     
     // MARK: ACTIONS
     
-    @objc func handleRefresh() {
-        print("Refreshing")
-        fetchPhotos(of: currentPhotoQuery, inPage: 1)
-    }
-    
     @objc func handleRefreshButton(sender: UIButton) {
+        print("Refreshing")
         showEmptyCollectionViewMessage(false, messageType: .apiResponseError)
-        handleRefresh()
-        
+        fetchPhotos(of: currentPhotoQuery, inPage: 1)
     }
     
     // MARK: NETWORK
@@ -153,23 +151,27 @@ class GalleryController: UICollectionViewController {
             
             guard let apiResponse = apiResponse else {
                 print("APIResponse is nil")
-                self?.showEmptyCollectionViewMessage(messageType: .noSearchResult)
+                DispatchQueue.main.async {
+                    self?.showEmptyCollectionViewMessage(messageType: .noSearchResult)
+                }
                 return
             }
             self?.currentPage = page
             if self?.currentPage == 1 {
-                self?.photos = nil
+                self?.photos.removeAll()
                 // don't add images without links
-                self?.photos = apiResponse.getAllImages()?.filter({$0.getImageLink() != nil})
-                
-                if self?.photos == nil || self?.photos?.count == 0 {
-                    self?.showEmptyCollectionViewMessage(messageType: .noSearchResult)
-                } else {
-                    self?.showEmptyCollectionViewMessage(false, messageType: .noSearchResult)
+                self?.photos = apiResponse.getAllImages()?.filter({$0.getImageLink() != nil}) ?? []
+                DispatchQueue.main.async {
+                                    if self?.photos.count == 0 {
+                        self?.showEmptyCollectionViewMessage(messageType: .noSearchResult)
+                    } else {
+                        self?.showEmptyCollectionViewMessage(false, messageType: .noSearchResult)
+                    }
                 }
+
             } else {
                 if let newSetOfPhotos = apiResponse.getAllImages()?.filter({$0.getImageLink() != nil}) {
-                    self?.photos?.append(contentsOf: newSetOfPhotos)
+                    self?.photos.append(contentsOf: newSetOfPhotos)
                 }
             }
             self?.numberOfPhotosBeenLoaded += apiResponse.getAllImages()?.count ?? 0
@@ -177,6 +179,7 @@ class GalleryController: UICollectionViewController {
             if self?.numberOfPhotosBeenLoaded ?? 0 < apiResponse.getNumberOfResults() {
                 self?.shouldLoadMoreImages = true
             }
+            
             DispatchQueue.main.async {
                 print("Reload CollectionView")
                 self?.collectionView.reloadData()
@@ -190,36 +193,35 @@ class GalleryController: UICollectionViewController {
 extension GalleryController {
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.photos?.count ?? 0
+        return self.photos.count
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: photoCellReuseIdentifier, for: indexPath) as? PhotoCell {
             /// load more photos if available
             /// note - start fetching next batch of photos before it gets to the end of the collectionview
-            if ((photos?.count ?? 0) - 10) == indexPath.item && shouldLoadMoreImages {
+            if (photos.count - 10) == indexPath.item && shouldLoadMoreImages {
                 shouldLoadMoreImages = false
                 currentPage += 1
                 fetchPhotos(of: currentPhotoQuery, inPage: currentPage)
             }
             
             /// set cell
-            if let photo = photos?[indexPath.item] {
-                cell.setCellInfo(photo: photo)
-                return cell
-            }
+            cell.setCellInfo(photo: photos[indexPath.item])
+            return cell
+            
         }
         return PhotoCell()
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let detailVC = PhotoDetailController()
-        detailVC.photo = photos?[indexPath.item]
+        detailVC.photo = photos[indexPath.item]
         present(detailVC, animated: true)
     }
     
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "LoadingFooterView", for: indexPath)
+        let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: loadingFooterReuseIdentifier, for: indexPath)
         return footerView
     }
     
@@ -245,7 +247,7 @@ extension GalleryController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
         let sizeToHideFooter = CGSize(width: 0, height: 0)
         let sizeToShowFooter = CGSize(width: view.frame.width, height: 60)
-        return photos?.count == 0 || photos == nil ? sizeToHideFooter : sizeToShowFooter
+        return photos.count == 0 || !shouldLoadMoreImages ? sizeToHideFooter : sizeToShowFooter
     }
 }
 

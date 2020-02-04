@@ -23,7 +23,7 @@ class PhotoDetailController: UIViewController {
                                   fontSize: 20,
                                   fontWeight: .bold,
                                   dynamicSize: true,
-                                  numberOfLines: 1,
+                                  numberOfLines: 2,
                                   textAlignment: .center)
     
     let border1 = UIView(backgroundColor: .secondaryColor)
@@ -58,7 +58,7 @@ class PhotoDetailController: UIViewController {
                             fontSize: 16,
                             fontWeight: .thin,
                             dynamicSize: true,
-                            numberOfLines: 10,
+                            numberOfLines: 0,
                             textAlignment: .center)
         let attributedText = NSMutableAttributedString(string: "by", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15, weight: .medium)])
         attributedText.append(NSAttributedString(string: " Photographer", attributes: [:]))
@@ -153,15 +153,15 @@ class PhotoDetailController: UIViewController {
                              height: 0)
         switch deviceDetection.getDeviceClass() {
         case "iPhone 7, 6 or 6S", "iPhone 5 or 5S or 5C":
-            thumbnailSizeMultiplier = 0.6
+            thumbnailSizeMultiplier = 0.58
         default:
             thumbnailSizeMultiplier = 0.65
         }
         photoThumbnailImageView.anchor(width: screenWidth * thumbnailSizeMultiplier, height: screenWidth * thumbnailSizeMultiplier)
         border1.anchor(width: screenWidth * 0.8, height: 2)
         border2.anchor(width: screenWidth * 0.8, height: 2)
-        photoLocationLabel.anchor(width: screenWidth, height: 20)
-        photoPhotographerLabel.anchor(width: screenWidth, height: 25)
+        photoLocationLabel.anchor(width: screenWidth * 0.8, height: 20)
+        photoPhotographerLabel.anchor(width: screenWidth * 0.8, height: 25)
         
         mainStackView.addArrangedSubview(SpacerView(space: 5))
         mainStackView.addArrangedSubview(photoThumbnailImageView)

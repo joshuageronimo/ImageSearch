@@ -24,7 +24,7 @@ extension UILabel {
         self.adjustsFontSizeToFitWidth = dynamicSize
         self.textAlignment = textAlignment
         self.numberOfLines = numberOfLines
-        self.minimumScaleFactor = 0.5
+        self.minimumScaleFactor = 0.7
     }
 }
 

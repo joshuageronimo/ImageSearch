@@ -23,16 +23,20 @@ class CustomImageView: UIImageView {
     var imageUrlString: String? /* reference of the current URL */
     
     func loadImageUsingUrlString(urlString: String, completion: @escaping (PhotoLoadingStatus) -> ()) {
+        print("loading image from urlString: \(urlString)")
         imageUrlString = urlString
+        image = UIImage(named: "default-gallery-image") /* set deafult image while waiting for image to load */
         guard let url = URL(string: urlString) else {
+            print("Failed to create url from string: \(urlString)")
             completion(.failed)
+            imageCache.setObject(image!, forKey: urlString as AnyObject)
             return
         }
-        image = UIImage(named: "default-gallery-image") /* set deafult image while waiting for image to load */
         
         // If the image is in the imageCache already, use that image to avoid reloading of data.
         if let imageFromCache = imageCache.object(forKey: urlString as AnyObject) as? UIImage {
             self.image = imageFromCache
+            print("Succes! Image from cache")
             completion(.success)
             return
         }
@@ -46,6 +50,7 @@ class CustomImageView: UIImageView {
                 completion(.success)
                 self.image = imageToCache
             }
+            print("Succes! Image loaded and cached")
             // cache the image
             completion(.success)
             imageCache.setObject(imageToCache, forKey: urlString as AnyObject)
