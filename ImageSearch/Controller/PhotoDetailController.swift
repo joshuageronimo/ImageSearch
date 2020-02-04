@@ -11,6 +11,10 @@ import UIKit
 class PhotoDetailController: UIViewController {
     
     // MARK: UIOBJECTS
+    let mainStackView = UIStackView(space: 20,
+                                    distribution: .fill,
+                                    alignment: .center)
+    
     let photoThumbnailImageView = CustomImageView(image: UIImage(named: "default-gallery-image")!,
                                                   contentMode: .scaleAspectFill)
     
@@ -62,9 +66,11 @@ class PhotoDetailController: UIViewController {
         return label
     }()
     
-    let mainStackView = UIStackView(space: 20,
-                                    distribution: .fill,
-                                    alignment: .center)
+    let dismissButton: UIButton = {
+        let button = UIButton(image: UIImage(named: "dismiss-button")!)
+        button.addTarget(self, action: #selector(handleDismissButton(sender:)), for: .touchUpInside)
+        return button
+    }()
     
     var photo: Photo? {
         didSet {
@@ -79,6 +85,7 @@ class PhotoDetailController: UIViewController {
                         print("success")
                     }
                 }
+                
                 photoTitleLabel.text = imageInfo.title ?? "Unknown"
                 
                 if let description = imageInfo.description {
@@ -120,10 +127,19 @@ class PhotoDetailController: UIViewController {
         setLayoutConstraints()
     }
     
+    // MARK: ACTIONS
+    
+    @objc func handleDismissButton(sender: UIButton) {
+        dismiss(animated: true)
+    }
+    
     // MARK: USER INTERFACE
     
     fileprivate func setLayoutConstraints() {
         let screenWidth = self.view.frame.width
+        var thumbnailSizeMultiplier: CGFloat = 0.6
+        
+        // set mainStackView
         view.addSubview(mainStackView)
         mainStackView.anchor(top: view.safeAreaLayoutGuide.topAnchor,
                              left: view.leadingAnchor,
@@ -135,11 +151,19 @@ class PhotoDetailController: UIViewController {
                              bottomPadding: -10,
                              width: 0,
                              height: 0)
-        
-        photoThumbnailImageView.anchor(width: screenWidth * 0.60, height: screenWidth * 0.60)
+        switch deviceDetection.getDeviceClass() {
+        case "iPhone 7, 6 or 6S", "iPhone 5 or 5S or 5C":
+            thumbnailSizeMultiplier = 0.6
+        default:
+            thumbnailSizeMultiplier = 0.65
+        }
+        photoThumbnailImageView.anchor(width: screenWidth * thumbnailSizeMultiplier, height: screenWidth * thumbnailSizeMultiplier)
         border1.anchor(width: screenWidth * 0.8, height: 2)
         border2.anchor(width: screenWidth * 0.8, height: 2)
+        photoLocationLabel.anchor(width: screenWidth, height: 20)
+        photoPhotographerLabel.anchor(width: screenWidth, height: 25)
         
+        mainStackView.addArrangedSubview(SpacerView(space: 5))
         mainStackView.addArrangedSubview(photoThumbnailImageView)
         mainStackView.addArrangedSubview(photoTitleLabel)
         mainStackView.addArrangedSubview(border1)
@@ -148,5 +172,20 @@ class PhotoDetailController: UIViewController {
         mainStackView.addArrangedSubview(photoLocationLabel)
         mainStackView.addArrangedSubview(UIView())
         mainStackView.addArrangedSubview(photoPhotographerLabel)
+        
+        // set dismissbutton constraints
+        view.addSubview(dismissButton)
+        dismissButton.anchor(top: view.topAnchor,
+                             left: nil,
+                             right: view.trailingAnchor,
+                             bottom: nil,
+                             topPadding: 15,
+                             leftPadding: 0,
+                             rightPadding: -30,
+                             bottomPadding: 0,
+                             width: 25,
+                             height: 25)
+        
+        
     }
 }

@@ -29,7 +29,11 @@ class GalleryController: UICollectionViewController {
         return button
     }()
     
-    fileprivate let refreshControl = UIRefreshControl()
+    fileprivate let loadingIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView(style: .large)
+        activityIndicator.hidesWhenStopped = true
+        return activityIndicator
+    }()
     
     fileprivate let photoCellReuseIdentifier = "PhotoCell"
     fileprivate var photos: [Photo]?
@@ -55,9 +59,7 @@ class GalleryController: UICollectionViewController {
         view.backgroundColor = .mainColor
         setupNavigationBar()
         registerCollectionViewCells()
-        refreshControl.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
-//        collectionView.refreshControl = refreshControl
-        // travel photos by default
+        showLoadingIndicator()
         fetchPhotos(of: currentPhotoQuery, inPage: 1)
     }
     
@@ -76,6 +78,8 @@ class GalleryController: UICollectionViewController {
     
     fileprivate func registerCollectionViewCells() {
         collectionView.register(UINib(nibName: photoCellReuseIdentifier, bundle: .main), forCellWithReuseIdentifier: photoCellReuseIdentifier)
+        
+        collectionView.register(UINib(nibName: "LoadingFooterView", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "LoadingFooterView")
     }
     
     func showEmptyCollectionViewMessage(_ showErrorMessage: Bool = true, messageType: EmptyCollectionViewMessageType) {
@@ -101,6 +105,20 @@ class GalleryController: UICollectionViewController {
         }
     }
     
+    fileprivate func showLoadingIndicator(_ show: Bool = true) {
+        if show {
+            photos = nil
+            collectionView.reloadData()
+            view.addSubview(loadingIndicator)
+            loadingIndicator.anchor(centerX: view.centerXAnchor,
+                                    centerY: view.centerYAnchor)
+            loadingIndicator.startAnimating()
+        } else {
+            loadingIndicator.removeFromSuperview()
+        }
+        
+    }
+    
     // MARK: ACTIONS
     
     @objc func handleRefresh() {
@@ -122,10 +140,13 @@ class GalleryController: UICollectionViewController {
                                     "page": "\(page)"]
         print("Start Fetching Photos")
         NetworkService.shared.fetchData(apiEndPoint: "/search", parameters: param) { [weak self] (apiResponse: APIResponse?, error: Error?)  in
+            self?.showLoadingIndicator(false)
             if let error = error {
                 print("Failed to fetch photos: \(error)")
                 DispatchQueue.main.async {
-                    self?.showEmptyCollectionViewMessage(messageType: .apiResponseError)
+                    if self?.photos != nil {
+                        self?.showEmptyCollectionViewMessage(messageType: .apiResponseError)
+                    }
                 }
                 return
             }
@@ -196,6 +217,13 @@ extension GalleryController {
         detailVC.photo = photos?[indexPath.item]
         present(detailVC, animated: true)
     }
+    
+    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "LoadingFooterView", for: indexPath)
+        return footerView
+    }
+    
+    
 }
 
 extension GalleryController: UICollectionViewDelegateFlowLayout {
@@ -213,6 +241,12 @@ extension GalleryController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 0
     }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+        let sizeToHideFooter = CGSize(width: 0, height: 0)
+        let sizeToShowFooter = CGSize(width: view.frame.width, height: 60)
+        return photos?.count == 0 || photos == nil ? sizeToHideFooter : sizeToShowFooter
+    }
 }
 
 // MARK: UISearchBar Delegate Functions
@@ -228,9 +262,11 @@ extension GalleryController: UISearchBarDelegate {
         
         // only fetch API for a different query and not empty
         if query != currentPhotoQuery && query != "" {
+            showLoadingIndicator()
             fetchPhotos(of: query, inPage: 1)
         }
         searchController.isActive = false
+        searchController.searchBar.text = query
     }
 }
 

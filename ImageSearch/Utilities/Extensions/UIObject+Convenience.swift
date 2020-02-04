@@ -34,7 +34,8 @@ extension UIImageView {
         if let tintColor = tintColor {
            self.tintColor = tintColor
         }
-        self.contentMode = .scaleAspectFit
+        self.contentMode = contentMode
+        self.clipsToBounds = true
     }
 }
 
@@ -56,6 +57,12 @@ extension UIButton {
         if borderColor != nil || backgroundColor != nil {
             self.layer.cornerRadius = cornerRadius
         }
+    }
+    
+    convenience init(image: UIImage) {
+        self.init(type: .system)
+        self.setBackgroundImage(image, for: .normal)
+        self.imageView?.contentMode = .scaleAspectFit
     }
 }
 
